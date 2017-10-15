@@ -107,6 +107,14 @@ public class Main {
                         OrderBot.createBuyOrderForList(ItemSearch.getRareEquipmentForEcto(), true);
                         printHorizontalLine();
                         break;
+                    case "16":
+                        ItemSearch.getCraftingProfit(false);
+                        printHorizontalLine();
+                        break;
+                    case "17":
+                        ItemSearch.getCraftingProfit(true);
+                        printHorizontalLine();
+                        break;
                 }
             } catch (Exception ex) {
                 System.err.println(ex);

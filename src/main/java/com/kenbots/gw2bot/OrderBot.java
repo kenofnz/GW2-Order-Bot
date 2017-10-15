@@ -60,7 +60,7 @@ public class OrderBot {
 
     public static void startPlacingBuyOrders(boolean rareEightyOnly) {
         try {
-            int extraY = (itemName.length() > 32) ? 15 : 0;
+            int extraY = (itemName.length() > 34) ? 15 : 0;
             System.out.println("Placing Buy Orders in 2 seconds...");
             Robot robot = new Robot();
 

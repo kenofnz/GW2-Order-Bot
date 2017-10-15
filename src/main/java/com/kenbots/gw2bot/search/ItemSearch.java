@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -342,6 +343,65 @@ public class ItemSearch {
         return itemsToBuy;
     }
 
+    public static void getCraftingProfit(boolean instantBuy) {
+        int itemId = 83502;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Lodestone");
+        HashMap<Integer, Integer> ingredients = new HashMap<>();
+        ingredients.put(83103, 50);
+        ingredients.put(19701, 2);
+        ingredients.put(74328, 5);
+        ingredients.put(68942, 2);
+
+        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Sliver");
+        ingredients = new HashMap<>();
+        ingredients.put(83103, 50);
+        ingredients.put(19701, 2);
+        ingredients.put(74328, 5);
+        ingredients.put(68952, 32);
+
+        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+    }
+
+    public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Integer> ingredients, boolean instantBuy) {
+        int cost = 0;
+        int craftAmount = 0;
+        int totalReturn = 0;
+        for (Entry<Integer, Integer> ingredient : ingredients.entrySet()) {
+            int quantity = ingredient.getValue();
+            int ingredientId = ingredient.getKey();
+            if (ingredientId == 19663) {
+                cost += quantity * 2504;
+            } else {
+                if (instantBuy) {
+                    cost += quantity * Main.GW2API.commerce().prices().get(ingredientId).getSells().getUnitPrice();
+                } else {
+                    cost += quantity * Main.GW2API.commerce().prices().get(ingredientId).getBuys().getUnitPrice();
+                }
+            }
+        }
+
+        ListingPart[] listings = Main.GW2API.commerce().listings().get(itemId).getBuys();
+        for (ListingPart listing : listings) {
+            if (listing.getUnitPrice() * 0.85 > cost * 1.05) {
+                craftAmount += listing.getQuantity();
+                totalReturn += listing.getQuantity() * listing.getUnitPrice() * 0.85;
+            }
+        }
+
+        System.out.println("Craft " + craftAmount + " " + Main.GW2API.items().get(itemId).getName());
+        System.out.println("1 Cost " + cost);
+        System.out.println("Minimum to Profit " + Math.round(cost * 1.05 / 0.85));
+
+        System.out.println(craftAmount + " Cost " + cost * craftAmount);
+        System.out.println(craftAmount + " Return " + totalReturn);
+        if (craftAmount != 0) {
+            System.out.println("Profit " + (totalReturn - cost * craftAmount) + "(" + 100 * (totalReturn - cost * craftAmount) / (cost * craftAmount) + "%)");
+        }
+        System.out.println();
+    }
+
     private static boolean salvageForEcto(int rareCost, int ectoMinSell) {
         return (ectoMinSell * .875 * .85) - (rareCost + 2624 / 250) >= 0.1 * rareCost;
     }
@@ -395,14 +455,15 @@ public class ItemSearch {
             totalRares += t.getQuantity();
         }
 
-        System.out.println(totalCost);
-        System.out.println(totalRares);
-        System.out.println((totalRares * 0.875 * ectoMinSell * 0.85) - totalCost);
-        System.out.println(((totalRares * 0.875 * ectoMinSell * 0.85) - totalCost) / totalCost);
+        System.out.println("Costs: " + totalCost);
+        System.out.println("Number of Rares: " + totalRares);
+        System.out.println("Profit: " + ((totalRares * 0.875 * ectoMinSell * 0.85) - totalCost));
+        System.out.println("Profit %: " + 100 * ((totalRares * 0.875 * ectoMinSell * 0.85) - totalCost) / totalCost);
         return itemsToBuy;
     }
 
     public static void gsSupplyTracker() {
+        reloadFlipSettings();
         JSONArray results = queryGw2Spidy("all-items/all").getJSONArray("results");
         int totalSupply = 0;
         for (int j = 0; j < results.length(); j++) {
