@@ -362,9 +362,27 @@ public class ItemSearch {
         ingredients.put(68952, 32);
 
         evaluateCraftingProfit(itemId, ingredients, instantBuy);
+
+        itemId = 48916;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell");
+        ingredients = new HashMap<>();
+        ingredients.put(24277, 3);
+        ingredients.put(48884, 5);
+        evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+
+        itemId = 48917;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell");
+        ingredients = new HashMap<>();
+        ingredients.put(24277, 3);
+        ingredients.put(48884, 5);
+        evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
     }
 
     public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Integer> ingredients, boolean instantBuy) {
+        evaluateCraftingProfit(itemId, ingredients, instantBuy, 1);
+    }
+
+    public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Integer> ingredients, boolean instantBuy, int outputAmount) {
         int cost = 0;
         int craftAmount = 0;
         int totalReturn = 0;
@@ -384,15 +402,15 @@ public class ItemSearch {
 
         ListingPart[] listings = Main.GW2API.commerce().listings().get(itemId).getBuys();
         for (ListingPart listing : listings) {
-            if (listing.getUnitPrice() * 0.85 > cost * 1.05) {
-                craftAmount += listing.getQuantity();
+            if (outputAmount * listing.getUnitPrice() * 0.85 > cost * 1.1) {
+                craftAmount += listing.getQuantity() / outputAmount;
                 totalReturn += listing.getQuantity() * listing.getUnitPrice() * 0.85;
             }
         }
 
-        System.out.println("Craft " + craftAmount + " " + Main.GW2API.items().get(itemId).getName());
-        System.out.println("1 Cost " + cost);
-        System.out.println("Minimum to Profit " + Math.round(cost * 1.05 / 0.85));
+        System.out.println("Craft " + craftAmount + " " + outputAmount + "x " + Main.GW2API.items().get(itemId).getName() + "(" + craftAmount * outputAmount + " Total)");
+        System.out.println("1 " + outputAmount + "x Cost " + cost + " (" + cost / outputAmount + " per item)");
+        System.out.println("Minimum to Profit " + Math.round(cost * 1.1 / 0.85 / outputAmount));
 
         System.out.println(craftAmount + " Cost " + cost * craftAmount);
         System.out.println(craftAmount + " Return " + totalReturn);
