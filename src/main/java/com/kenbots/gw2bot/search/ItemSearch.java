@@ -211,7 +211,8 @@ public class ItemSearch {
     public static LinkedList<Listing> getListOfGreatswordMaterialItems() {
         LinkedList<Listing> itemsToBuy = new LinkedList<>();
 
-        int[] materialID = {19700, 24356, 19722};
+        //int[] materialID = {19700, 24356, 19722};
+        int[] materialID = {19684, 24356, 19722};
         for (int itemId : materialID) {
             Price item = Main.GW2API.commerce().prices().get(itemId).getBuys();
 
@@ -221,6 +222,9 @@ public class ItemSearch {
             maxBuyOrder = item.getUnitPrice();
             int amountToOrder = 0;
             switch (itemId) {
+                case 19684:
+                    amountToOrder = Integer.parseInt(FLIP_SETTINGS.getProperty("craftgreatswords")) * 12;
+                    break;
                 case 19700:
                     amountToOrder = Integer.parseInt(FLIP_SETTINGS.getProperty("craftgreatswords")) * 24;
                     break;
@@ -329,7 +333,7 @@ public class ItemSearch {
             profit = (int) ((minSellOrder * 0.85) - maxBuyOrder);
             percentMargin = 1D * profit / maxBuyOrder;
 
-            if (minsSinceLastChange <= 60
+            if (minsSinceLastChange <= 120
                     && profit >= Integer.parseInt(FLIP_SETTINGS.getProperty("minprofit"))
                     && percentMargin >= Double.parseDouble(FLIP_SETTINGS.getProperty("minprofitpercent"))) {
                 count.add(new Listing(itemId, 1, maxBuyOrder, name));

@@ -94,24 +94,24 @@ public class OrderBot {
             // Click on first item result
             clickOnPoint(robot, 530, 275);
             robot.delay(1000);
-
-            System.out.println("Entering Price...");
-            // Place Copper Price
-            clickOnPoint(robot, 550, 300 + extraY);
-            selectAll(robot);
-            enterString(robot, Integer.toString(priceCopper));
-
-            // Place Silver Price
-            clickOnPoint(robot, 489, 300 + extraY);
-            selectAll(robot);
-            enterString(robot, Integer.toString(priceSilver));
-
-            // Place Gold Price
-            clickOnPoint(robot, 400, 300 + extraY);
-            selectAll(robot);
-            enterString(robot, Integer.toString(priceGold));
             int i = 0;
             for (int quantity = itemAmount; quantity > 0; quantity -= 250) {
+
+                System.out.println("Entering Price...");
+                // Place Copper Price
+                clickOnPoint(robot, 550, 300 + extraY);
+                selectAll(robot);
+                enterString(robot, Integer.toString(priceCopper));
+
+                // Place Silver Price
+                clickOnPoint(robot, 489, 300 + extraY);
+                selectAll(robot);
+                enterString(robot, Integer.toString(priceSilver));
+
+                // Place Gold Price
+                clickOnPoint(robot, 400, 300 + extraY);
+                selectAll(robot);
+                enterString(robot, Integer.toString(priceGold));
                 System.out.println("Entering Quantity...");
                 // Enter Amount
                 clickOnPoint(robot, 390, 260 + extraY);
@@ -226,7 +226,7 @@ public class OrderBot {
         robot.mouseMove(x, y);
         robot.mousePress(InputEvent.BUTTON1_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_MASK);
-        robot.delay((int) (100 + Math.random() * 100));
+        robot.delay((int) (60 + Math.random() * 10));
     }
 
     private static void enterString(Robot robot, String text) {
