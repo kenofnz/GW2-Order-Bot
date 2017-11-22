@@ -212,7 +212,9 @@ public class ItemSearch {
         LinkedList<Listing> itemsToBuy = new LinkedList<>();
 
         //int[] materialID = {19700, 24356, 19722};
-        int[] materialID = {19684, 24356, 19722};
+        //int[] materialID = {19684, 24356, 19722};
+        int[] materialID = {19684, 24356, 19709};
+
         for (int itemId : materialID) {
             Price item = Main.GW2API.commerce().prices().get(itemId).getBuys();
 
@@ -234,6 +236,9 @@ public class ItemSearch {
                 case 19722:
                     amountToOrder = Integer.parseInt(FLIP_SETTINGS.getProperty("craftgreatswords")) * 12;
                     name = "elder wood l";
+                    break;
+                case 19709:
+                    amountToOrder = Integer.parseInt(FLIP_SETTINGS.getProperty("craftgreatswords")) * 4;
                     break;
                 default:
                     break;
@@ -349,49 +354,74 @@ public class ItemSearch {
 
     public static void getCraftingProfit(boolean instantBuy) {
         int itemId = 83502;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Lodestone");
-        HashMap<Integer, Integer> ingredients = new HashMap<>();
-        ingredients.put(83103, 50);
-        ingredients.put(19701, 2);
-        ingredients.put(74328, 5);
-        ingredients.put(68942, 2);
-
-        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+        HashMap<Integer, Double> ingredients = new HashMap<>();
+//        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Lodestone");
+//        ingredients.put(83103, 50);
+//        ingredients.put(19701, 2);
+//        ingredients.put(74328, 5);
+//        ingredients.put(68942, 2);
+//
+//        evaluateCraftingProfit(itemId, ingredients, instantBuy);
 
         System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Sliver");
         ingredients = new HashMap<>();
-        ingredients.put(83103, 50);
-        ingredients.put(19701, 2);
-        ingredients.put(74328, 5);
-        ingredients.put(68952, 32);
+        ingredients.put(83103, 50D);
+        ingredients.put(19701, 2D);
+        ingredients.put(74328, 5D);
+        ingredients.put(68952, 32D);
 
         evaluateCraftingProfit(itemId, ingredients, instantBuy);
 
-        itemId = 48916;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell");
+//        itemId = 71425;
+//        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Sliver");
+//        ingredients = new HashMap<>();
+//        ingredients.put(74202, 10D);
+//        ingredients.put(24821, 1D);
+//        ingredients.put(68952, 16D);
+//
+//        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+        itemId = 82678;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
         ingredients = new HashMap<>();
-        ingredients.put(24277, 3);
-        ingredients.put(48884, 5);
+        ingredients.put(83757, 10D);
+        ingredients.put(24330, 1D);
+        ingredients.put(83284, 3D);
+        ingredients.put(83103, 10D);
+        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+
+        itemId = 43451;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
+        ingredients = new HashMap<>();
+        ingredients.put(24277, 3.6D);
+        ingredients.put(19701, 2.4D);
         evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
 
         itemId = 48917;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell");
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
         ingredients = new HashMap<>();
-        ingredients.put(24277, 3);
-        ingredients.put(48884, 5);
+        ingredients.put(24277, 3D);
+        ingredients.put(48884, 5D);
+        evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+
+        itemId = 48916;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
+        ingredients = new HashMap<>();
+        ingredients.put(24277, 3D);
+        ingredients.put(48884, 5D);
         evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
     }
 
-    public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Integer> ingredients, boolean instantBuy) {
+    public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Double> ingredients, boolean instantBuy) {
         evaluateCraftingProfit(itemId, ingredients, instantBuy, 1);
     }
 
-    public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Integer> ingredients, boolean instantBuy, int outputAmount) {
+    public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Double> ingredients, boolean instantBuy, int outputAmount) {
+        double profitMargin = 0.05;
         int cost = 0;
         int craftAmount = 0;
         int totalReturn = 0;
-        for (Entry<Integer, Integer> ingredient : ingredients.entrySet()) {
-            int quantity = ingredient.getValue();
+        for (Entry<Integer, Double> ingredient : ingredients.entrySet()) {
+            double quantity = ingredient.getValue();
             int ingredientId = ingredient.getKey();
             if (ingredientId == 19663) {
                 cost += quantity * 2504;
@@ -406,7 +436,7 @@ public class ItemSearch {
 
         ListingPart[] listings = Main.GW2API.commerce().listings().get(itemId).getBuys();
         for (ListingPart listing : listings) {
-            if (outputAmount * listing.getUnitPrice() * 0.85 > cost * 1.1) {
+            if (outputAmount * listing.getUnitPrice() * 0.85 > cost * (1 + profitMargin)) {
                 craftAmount += listing.getQuantity() / outputAmount;
                 totalReturn += listing.getQuantity() * listing.getUnitPrice() * 0.85;
             }
@@ -414,8 +444,9 @@ public class ItemSearch {
 
         System.out.println("Craft " + craftAmount + " " + outputAmount + "x " + Main.GW2API.items().get(itemId).getName() + "(" + craftAmount * outputAmount + " Total)");
         System.out.println("1 " + outputAmount + "x Cost " + cost + " (" + cost / outputAmount + " per item)");
-        System.out.println("Minimum to Profit " + Math.round(cost * 1.1 / 0.85 / outputAmount));
-
+        System.out.println("Minimum to Profit " + (profitMargin * 100) + "% " + Math.round(cost * (1 + profitMargin) / 0.85 / outputAmount));
+        int salePrice = Main.GW2API.commerce().prices().get(itemId).getSells().getUnitPrice();
+        System.out.println("Lowest Sell Offer " + salePrice + "(" + 100 * (salePrice * 0.85 - cost / outputAmount) / (cost / outputAmount) + "% profit)");
         System.out.println(craftAmount + " Cost " + cost * craftAmount);
         System.out.println(craftAmount + " Return " + totalReturn);
         if (craftAmount != 0) {
@@ -481,6 +512,28 @@ public class ItemSearch {
         System.out.println("Number of Rares: " + totalRares);
         System.out.println("Profit: " + ((totalRares * 0.875 * ectoMinSell * 0.85) - totalCost));
         System.out.println("Profit %: " + 100 * ((totalRares * 0.875 * ectoMinSell * 0.85) - totalCost) / totalCost);
+        return itemsToBuy;
+    }
+
+    public static LinkedList<Listing> getMediumCoatForLeather() {
+        reloadFlipSettings();
+        LinkedList<Listing> count = new LinkedList<>();
+        LinkedList<Listing> itemsToBuy = new LinkedList<>();
+
+        Price hardenedLeatherPrice = Main.GW2API.commerce().prices().get(19732).getSells();
+        int hardenedLeatherMinSell = hardenedLeatherPrice.getUnitPrice();
+
+        Price thickLeatherPrice = Main.GW2API.commerce().prices().get(19729).getSells();
+        int thickLeatherMinSell = thickLeatherPrice.getUnitPrice();
+
+        double totalMinSell = 2.25 * thickLeatherMinSell + 0.125 * hardenedLeatherMinSell;
+        System.out.println("30% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.3));
+        System.out.println("25% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.25));
+        System.out.println("20% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.2));
+        System.out.println("10% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.1));
+        System.out.println("Break even Max Buy = " + ((totalMinSell * .85 - 3)));
+        System.out.println("Hardened Leather Section Sell: " + hardenedLeatherMinSell);
+        System.out.println("Thick Leather Section Sell: " + thickLeatherMinSell);
         return itemsToBuy;
     }
 

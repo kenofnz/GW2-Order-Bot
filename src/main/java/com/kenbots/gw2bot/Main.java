@@ -104,7 +104,7 @@ public class Main {
                         printHorizontalLine();
                         break;
                     case "15":
-                        OrderBot.createBuyOrderForList(ItemSearch.getRareEquipmentForEcto(), true);
+                        OrderBot.createBuyOrderForList(ItemSearch.getRareEquipmentForEcto(), 1);
                         printHorizontalLine();
                         break;
                     case "16":
@@ -114,6 +114,13 @@ public class Main {
                     case "17":
                         ItemSearch.getCraftingProfit(true);
                         printHorizontalLine();
+                        break;
+                    case "18":
+                        ItemSearch.getMediumCoatForLeather();
+                        printHorizontalLine();
+                        break;
+                    case "19":
+                        OrderBot.clickForge();
                         break;
                 }
             } catch (Exception ex) {

@@ -20,11 +20,39 @@ public class OrderBot {
     public static int itemAmount = 1;
     public static int priceGold = 0, priceSilver = 0, priceCopper = 1;
 
-    public static void createBuyOrderForList(Collection<Listing> listings) {
-        createBuyOrderForList(listings, false);
+    public static void clickForge() {
+        try {
+            Robot robot = new Robot();
+            for (int i = 0; i < 35; i++) {
+                clickOnPoint(robot, 125, 135);
+                robot.delay(15);
+                clickOnPoint(robot, 125, 135);
+
+                clickOnPoint(robot, 190, 135);
+                robot.delay(15);
+                clickOnPoint(robot, 190, 135);
+
+                clickOnPoint(robot, 250, 135);
+                robot.delay(15);
+                clickOnPoint(robot, 250, 135);
+
+                clickOnPoint(robot, 315, 135);
+                robot.delay(15);
+                clickOnPoint(robot, 315, 135);
+
+                clickOnPoint(robot, 650, 590);
+                robot.delay(2000);
+            }
+        } catch (AWTException ex) {
+            Logger.getLogger(OrderBot.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public static void createBuyOrderForList(Collection<Listing> listings, boolean rareEightyOnly) {
+    public static void createBuyOrderForList(Collection<Listing> listings) {
+        createBuyOrderForList(listings, 0);
+    }
+
+    public static void createBuyOrderForList(Collection<Listing> listings, int buyOptions) {
         System.out.println("Creating Buy Orders for ");
         listings.forEach((Listing listing) -> {
             int copper;
@@ -49,25 +77,25 @@ public class OrderBot {
             gold = (newPrice / 10000);
 
             OrderBot.setOrderBotSettings(listing.getName(), listing.getQuantity(), 1, copper, silver, gold);
-            OrderBot.startPlacingBuyOrders(rareEightyOnly);
+            OrderBot.startPlacingBuyOrders(buyOptions);
         });
         System.out.println();
     }
 
     public static void startPlacingBuyOrders() {
-        startPlacingBuyOrders(false);
+        startPlacingBuyOrders(0);
     }
 
-    public static void startPlacingBuyOrders(boolean rareEightyOnly) {
+    public static void startPlacingBuyOrders(int buyOptions) {
         try {
-            int extraY = (itemName.length() > 34) ? 15 : 0;
+            int extraY = (itemName.length() > 35) ? 15 : 0;
             System.out.println("Placing Buy Orders in 2 seconds...");
             Robot robot = new Robot();
 
             robot.delay(2000);
             clearAndOpenTradingPost(robot);
 
-            if (rareEightyOnly) {
+            if (buyOptions == 1) {
                 clickOnPoint(robot, 285, 190);
                 robot.delay(100);
                 clickOnPoint(robot, 140, 230);
@@ -75,6 +103,23 @@ public class OrderBot {
                 clickOnPoint(robot, 100, 350);
                 robot.delay(100);
                 clickOnPoint(robot, 232, 288);
+            } else if (buyOptions == 2) {
+                clickOnPoint(robot, 118, 229);
+                robot.delay(200);
+                clickOnPoint(robot, 120, 260);
+                robot.delay(200);
+                clickOnPoint(robot, 285, 190);
+                robot.delay(200);
+                clickOnPoint(robot, 130, 361);
+                robot.delay(200);
+                clickOnPoint(robot, 95, 500);
+                robot.delay(200);
+                clickOnPoint(robot, 86, 464);
+                robot.delay(200);
+                selectAll(robot);
+                enterString(robot, Integer.toString(80));
+                clickOnPoint(robot, 285, 190);
+                robot.delay(200);
             }
 
             // Click Search bar for Item
@@ -121,7 +166,7 @@ public class OrderBot {
                 System.out.println("Placing Order " + (i + 1) + "...");
                 // Click on Place Order
                 clickOnPoint(robot, 430, 390 + extraY);
-                robot.delay(1000);
+                robot.delay(1500);
 
                 // Click Ok
                 clickOnPoint(robot, 430, 390 + extraY);
@@ -189,11 +234,11 @@ public class OrderBot {
         // Open Lion Merchant
         robot.keyPress(KeyEvent.VK_O);
         robot.keyRelease(KeyEvent.VK_O);
-        robot.delay(200);
+        robot.delay(2000);
 
         // Go to TP
         clickOnPoint(robot, 25, 210);
-        robot.delay(1000);
+        robot.delay(4000);
     }
 
     private static void clearAndOpenTradingPostViaMerchant(Robot robot) {
