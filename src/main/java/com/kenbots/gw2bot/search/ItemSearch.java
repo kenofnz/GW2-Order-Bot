@@ -537,6 +537,49 @@ public class ItemSearch {
         return itemsToBuy;
     }
 
+    public static void getTrophyShipmentProfit() {
+        reloadFlipSettings();
+        LinkedList<Integer> t5Mats = new LinkedList<>();
+        t5Mats.add(24341); //Large Bone
+        t5Mats.add(24356); //Large Fang
+        t5Mats.add(24288); //Large Scale
+        t5Mats.add(24350); //Large Claw
+        t5Mats.add(24276); //Dust
+        t5Mats.add(24299); //Intricate Totem
+        t5Mats.add(24282); //Potent Venom Sac
+        t5Mats.add(24294); //Potent Bood
+
+        LinkedList<Integer> t6Mats = new LinkedList<>();
+        t6Mats.add(24358); //Large Bone
+        t6Mats.add(24357); //Large Fang
+        t6Mats.add(24289); //Large Scale
+        t6Mats.add(24351); //Large Claw
+        t6Mats.add(24278); //Dust
+        t6Mats.add(24299); //Intricate Totem
+        t6Mats.add(24283); //Potent Venom Sac
+        t6Mats.add(24295); //Potent Bood
+
+        int totalMinSell = 0;
+        for (int itemId : t5Mats) {
+            totalMinSell += 5 * Main.GW2API.commerce().prices().get(itemId).getSells().getUnitPrice();
+        }
+
+        for (int itemId : t6Mats) {
+            totalMinSell += 1 * Main.GW2API.commerce().prices().get(itemId).getSells().getUnitPrice();
+        }
+
+        totalMinSell += 0.2 * Main.GW2API.commerce().prices().get(83103).getSells().getUnitPrice();
+        totalMinSell += 0.2 * Main.GW2API.commerce().prices().get(83757).getSells().getUnitPrice();
+
+        System.out.println("Trophy Shipment Avg Sell: " + totalMinSell);
+
+        int roseQuartzCost = Main.GW2API.commerce().prices().get(86316).getSells().getUnitPrice();
+        int powderedRoseQuartzCost = Main.GW2API.commerce().prices().get(86269).getSells().getUnitPrice();
+
+        System.out.println("Rose Quartz Sell: " + roseQuartzCost * .85);
+        System.out.println("Rose Quartz To Powdered Sell: " + powderedRoseQuartzCost * 5 * .85);
+    }
+
     public static void gsSupplyTracker() {
         reloadFlipSettings();
         JSONArray results = queryGw2Spidy("all-items/all").getJSONArray("results");

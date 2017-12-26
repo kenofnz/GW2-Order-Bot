@@ -120,7 +120,7 @@ public class Main {
                         printHorizontalLine();
                         break;
                     case "19":
-                        OrderBot.clickForge();
+                        ItemSearch.getTrophyShipmentProfit();
                         break;
                 }
             } catch (Exception ex) {
