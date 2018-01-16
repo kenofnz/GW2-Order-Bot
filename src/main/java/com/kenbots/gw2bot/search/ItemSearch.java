@@ -396,6 +396,13 @@ public class ItemSearch {
         ingredients.put(19701, 2.4D);
         evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
 
+        itemId = 9443;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
+        ingredients = new HashMap<>();
+        ingredients.put(24277, 3D);
+        ingredients.put(19701, 2D);
+        evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+
         itemId = 48917;
         System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
         ingredients = new HashMap<>();
