@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -353,8 +356,8 @@ public class ItemSearch {
     }
 
     public static void getCraftingProfit(boolean instantBuy) {
-        int itemId = 83502;
-        HashMap<Integer, Double> ingredients = new HashMap<>();
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+        System.out.println("Gettng crafting profits...\n");
 //        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Lodestone");
 //        ingredients.put(83103, 50);
 //        ingredients.put(19701, 2);
@@ -362,16 +365,6 @@ public class ItemSearch {
 //        ingredients.put(68942, 2);
 //
 //        evaluateCraftingProfit(itemId, ingredients, instantBuy);
-
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Sliver");
-        ingredients = new HashMap<>();
-        ingredients.put(83103, 50D);
-        ingredients.put(19701, 2D);
-        ingredients.put(74328, 5D);
-        ingredients.put(68952, 32D);
-
-        evaluateCraftingProfit(itemId, ingredients, instantBuy);
-
 //        itemId = 71425;
 //        System.out.println(Main.GW2API.items().get(itemId).getName() + " Instant Sell with Evergreen Sliver");
 //        ingredients = new HashMap<>();
@@ -380,78 +373,98 @@ public class ItemSearch {
 //        ingredients.put(68952, 16D);
 //
 //        evaluateCraftingProfit(itemId, ingredients, instantBuy);
-        itemId = 82678;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
-        ingredients = new HashMap<>();
-        ingredients.put(83757, 10D);
-        ingredients.put(24330, 1D);
-        ingredients.put(83284, 3D);
-        ingredients.put(83103, 10D);
-        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+        Collection<Callable<String>> recipes = new LinkedList<>();
 
-        itemId = 43451;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
-        ingredients = new HashMap<>();
-        ingredients.put(24277, 3.6D);
-        ingredients.put(19701, 2.4D);
-        evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+        recipes.add((Callable<String>) () -> {
+            int itemId = 83502;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(83103, 50D);
+            ingredients.put(19701, 2D);
+            ingredients.put(74328, 5D);
+            ingredients.put(68952, 32D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
+        });
+        recipes.add((Callable<String>) () -> {
+            int itemId = 82678;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(83757, 10D);
+            ingredients.put(24330, 1D);
+            ingredients.put(83284, 3D);
+            ingredients.put(83103, 10D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
+        });
+        recipes.add((Callable<String>) () -> {
+            int itemId = 43451;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(24277, 3.6D);
+            ingredients.put(19701, 2.4D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+        });
+        recipes.add((Callable<String>) () -> {
+            int itemId = 9443;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(24277, 3D);
+            ingredients.put(19701, 2D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+        });
+        recipes.add((Callable<String>) () -> {
+            int itemId = 12459;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(12138, 2D);
+            ingredients.put(12155, 1D);
+            ingredients.put(12128, 1D);
+            ingredients.put(12156, 1D);
+            ingredients.put(12136, 1D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
+        });
+        recipes.add((Callable<String>) () -> {
+            int itemId = 12467;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(24359, 1D);
+            ingredients.put(12545, 1D);
+            ingredients.put(12144, 1D);
+            ingredients.put(12138, 1D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
+        });
+        recipes.add((Callable<String>) () -> {
+            int itemId = 12430;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(24359, 1D);
+            ingredients.put(12505, 1D);
+            ingredients.put(12138, 1D);
+            ingredients.put(12236, 1D);
+            ingredients.put(12153, 1D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
+        });
+        recipes.add((Callable<String>) () -> {
+            int itemId = 48917;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(24277, 3D);
+            ingredients.put(48884, 5D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+        });
+        recipes.add((Callable<String>) () -> {
+            int itemId = 48916;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(24277, 3D);
+            ingredients.put(48884, 5D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+        });
 
-        itemId = 9443;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
-        ingredients = new HashMap<>();
-        ingredients.put(24277, 3D);
-        ingredients.put(19701, 2D);
-        evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
-
-        itemId = 12459;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
-        ingredients = new HashMap<>();
-        ingredients.put(12138, 2D);
-        ingredients.put(12155, 1D);
-        ingredients.put(12128, 1D);
-        ingredients.put(12156, 1D);
-        ingredients.put(12136, 1D);
-        evaluateCraftingProfit(itemId, ingredients, instantBuy);
-
-        itemId = 12467;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
-        ingredients = new HashMap<>();
-        ingredients.put(24359, 1D);
-        ingredients.put(12545, 1D);
-        ingredients.put(12144, 1D);
-        ingredients.put(12138, 1D);
-        evaluateCraftingProfit(itemId, ingredients, instantBuy);
-
-        itemId = 12430;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
-        ingredients = new HashMap<>();
-        ingredients.put(24359, 1D);
-        ingredients.put(12505, 1D);
-        ingredients.put(12138, 1D);
-        ingredients.put(12236, 1D);
-        ingredients.put(12153, 1D);
-        evaluateCraftingProfit(itemId, ingredients, instantBuy);
-
-        itemId = 48917;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
-        ingredients = new HashMap<>();
-        ingredients.put(24277, 3D);
-        ingredients.put(48884, 5D);
-        evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
-
-        itemId = 48916;
-        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
-        ingredients = new HashMap<>();
-        ingredients.put(24277, 3D);
-        ingredients.put(48884, 5D);
-        evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+        pool.invokeAll(recipes).forEach((future) -> {
+            try {
+                System.out.println(future.get());
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(ItemSearch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
-    public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Double> ingredients, boolean instantBuy) {
-        evaluateCraftingProfit(itemId, ingredients, instantBuy, 1);
+    public static String evaluateCraftingProfit(int itemId, HashMap<Integer, Double> ingredients, boolean instantBuy) {
+        return evaluateCraftingProfit(itemId, ingredients, instantBuy, 1);
     }
 
-    public static void evaluateCraftingProfit(int itemId, HashMap<Integer, Double> ingredients, boolean instantBuy, int outputAmount) {
+    public static String evaluateCraftingProfit(int itemId, HashMap<Integer, Double> ingredients, boolean instantBuy, int outputAmount) {
         double profitMargin = 0.05;
         int cost = 0;
         int craftAmount = 0;
@@ -478,17 +491,19 @@ public class ItemSearch {
             }
         }
 
-        System.out.println("Craft " + craftAmount + " " + outputAmount + "x " + Main.GW2API.items().get(itemId).getName() + "(" + craftAmount * outputAmount + " Total)");
-        System.out.println("1 " + outputAmount + "x Cost " + cost + " (" + cost / outputAmount + " per item)");
-        System.out.println("Minimum to Profit " + (profitMargin * 100) + "% " + Math.round(cost * (1 + profitMargin) / 0.85 / outputAmount));
+        String result = "";
+        result += Main.GW2API.items().get(itemId).getName() + "\n";
+        result += "Crafting 1 " + outputAmount + "x Cost " + cost + " (" + cost / outputAmount + " per item)" + "\n";
+        result += "Minimum to Profit: " + (profitMargin * 100) + "% " + Math.round(cost * (1 + profitMargin) / 0.85 / outputAmount) + "\n";
         int salePrice = Main.GW2API.commerce().prices().get(itemId).getSells().getUnitPrice();
-        System.out.println("Lowest Sell Offer " + salePrice + "(" + 100 * (salePrice * 0.85 - cost / outputAmount) / (cost / outputAmount) + "% profit)");
-        System.out.println(craftAmount + " Cost " + cost * craftAmount);
-        System.out.println(craftAmount + " Return " + totalReturn);
+        result += "Lowest Sell Offer: " + salePrice + "(" + 100 * (salePrice * 0.85 - cost / outputAmount) / (cost / outputAmount) + "% profit)" + "\n";
         if (craftAmount != 0) {
-            System.out.println("Profit " + (totalReturn - cost * craftAmount) + "(" + 100 * (totalReturn - cost * craftAmount) / (cost * craftAmount) + "%)");
+            result += "Craft " + craftAmount + " " + outputAmount + "x " + Main.GW2API.items().get(itemId).getName() + "(" + craftAmount * outputAmount + " Total)" + "\n";
+            result += craftAmount + " Instant Sell Cost: " + cost * craftAmount + "\n";
+            result += craftAmount + " Instant Sell Return: " + totalReturn + "\n";
+            result += "Instant Sell Profit " + (totalReturn - cost * craftAmount) + "(" + 100 * (totalReturn - cost * craftAmount) / (cost * craftAmount) + "%)" + "\n";
         }
-        System.out.println();
+        return result;
     }
 
     private static boolean salvageForEcto(int rareCost, int ectoMinSell) {
