@@ -403,6 +403,35 @@ public class ItemSearch {
         ingredients.put(19701, 2D);
         evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
 
+        itemId = 12459;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
+        ingredients = new HashMap<>();
+        ingredients.put(12138, 2D);
+        ingredients.put(12155, 1D);
+        ingredients.put(12128, 1D);
+        ingredients.put(12156, 1D);
+        ingredients.put(12136, 1D);
+        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+
+        itemId = 12467;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
+        ingredients = new HashMap<>();
+        ingredients.put(24359, 1D);
+        ingredients.put(12545, 1D);
+        ingredients.put(12144, 1D);
+        ingredients.put(12138, 1D);
+        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+
+        itemId = 12430;
+        System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
+        ingredients = new HashMap<>();
+        ingredients.put(24359, 1D);
+        ingredients.put(12505, 1D);
+        ingredients.put(12138, 1D);
+        ingredients.put(12236, 1D);
+        ingredients.put(12153, 1D);
+        evaluateCraftingProfit(itemId, ingredients, instantBuy);
+
         itemId = 48917;
         System.out.println(Main.GW2API.items().get(itemId).getName() + " Sell Order");
         ingredients = new HashMap<>();
