@@ -211,10 +211,14 @@ public class Main {
         System.out.println(((buys) ? "Buy" : "Sell") + " Listings");
         printHorizontalLine();
         Transaction[] transactions = (buys) ? GW2API.commerce().transactions().currentBuys(API_KEY) : GW2API.commerce().transactions().currentSells(API_KEY);
+        int totalValue = 0;
         for (Transaction transaction : transactions) {
+            totalValue += transaction.getPrice() * transaction.getQuantity();
             Listing listing = new Listing(transaction.getItemId(), transaction.getQuantity(), transaction.getPrice());
             System.out.println(listing);
         }
+        totalValue *= (buys) ? 1 : .9;
+        System.out.println("Value: " + (totalValue / 10000) + "g " + (totalValue / 100) % 100 + "s " + totalValue % 100 + "c");
         printHorizontalLine();
     }
 
