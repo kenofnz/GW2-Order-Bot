@@ -361,16 +361,8 @@ public class ItemSearch {
         System.out.println("Gettng crafting profits...\n");
 
         Collection<Callable<String>> recipes = new LinkedList<>();
-//
-//        recipes.add((Callable<String>) () -> {
-//            int itemId = 83502;
-//            HashMap<Integer, Double> ingredients = new HashMap<>();
-//            ingredients.put(83103, 50D);
-//            ingredients.put(19701, 2D);
-//            ingredients.put(74328, 5D);
-//            ingredients.put(68952, 32D);
-//            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
-//        });
+
+        //Pulsing Brandspark
         recipes.add((Callable<String>) () -> {
             int itemId = 82678;
             HashMap<Integer, Double> ingredients = new HashMap<>();
@@ -380,6 +372,7 @@ public class ItemSearch {
             ingredients.put(83103, 10D);
             return evaluateCraftingProfit(itemId, ingredients, instantBuy);
         });
+        //Potent Superior Sharpening Stone
         recipes.add((Callable<String>) () -> {
             int itemId = 43451;
             HashMap<Integer, Double> ingredients = new HashMap<>();
@@ -387,23 +380,7 @@ public class ItemSearch {
             ingredients.put(19701, 2.4D);
             return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
         });
-//        recipes.add((Callable<String>) () -> {
-//            int itemId = 9443;
-//            HashMap<Integer, Double> ingredients = new HashMap<>();
-//            ingredients.put(24277, 3D);
-//            ingredients.put(19701, 2D);
-//            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
-//        });
-//        recipes.add((Callable<String>) () -> {
-//            int itemId = 12459;
-//            HashMap<Integer, Double> ingredients = new HashMap<>();
-//            ingredients.put(12138, 2D);
-//            ingredients.put(12155, 1D);
-//            ingredients.put(12128, 1D);
-//            ingredients.put(12156, 1D);
-//            ingredients.put(12136, 1D);
-//            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
-//        });
+        //Plate of Truffle Steak
         recipes.add((Callable<String>) () -> {
             int itemId = 12467;
             HashMap<Integer, Double> ingredients = new HashMap<>();
@@ -413,16 +390,15 @@ public class ItemSearch {
             ingredients.put(12138, 1D);
             return evaluateCraftingProfit(itemId, ingredients, instantBuy);
         });
+        //Plate of Fire Flank Steak
         recipes.add((Callable<String>) () -> {
-            int itemId = 12430;
+            int itemId = 12466;
             HashMap<Integer, Double> ingredients = new HashMap<>();
             ingredients.put(24359, 1D);
-            ingredients.put(12505, 1D);
-            ingredients.put(12138, 1D);
-            ingredients.put(12236, 1D);
-            ingredients.put(12153, 1D);
+            ingredients.put(12544, 1D);
             return evaluateCraftingProfit(itemId, ingredients, instantBuy);
         });
+        //Bowl of Sweet and Spicy Butternut Squash Soup
         recipes.add((Callable<String>) () -> {
             int itemId = 41569;
             HashMap<Integer, Double> ingredients = new HashMap<>();
@@ -442,6 +418,42 @@ public class ItemSearch {
 
             return evaluateCraftingProfit(itemId, ingredients, instantBuy, 2);
         });
+//        recipes.add((Callable<String>) () -> {
+//            int itemId = 9443;
+//            HashMap<Integer, Double> ingredients = new HashMap<>();
+//            ingredients.put(24277, 3D);
+//            ingredients.put(19701, 2D);
+//            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+//        });
+//        recipes.add((Callable<String>) () -> {
+//            int itemId = 12459;
+//            HashMap<Integer, Double> ingredients = new HashMap<>();
+//            ingredients.put(12138, 2D);
+//            ingredients.put(12155, 1D);
+//            ingredients.put(12128, 1D);
+//            ingredients.put(12156, 1D);
+//            ingredients.put(12136, 1D);
+//            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
+//        });
+//        recipes.add((Callable<String>) () -> {
+//            int itemId = 83502;
+//            HashMap<Integer, Double> ingredients = new HashMap<>();
+//            ingredients.put(83103, 50D);
+//            ingredients.put(19701, 2D);
+//            ingredients.put(74328, 5D);
+//            ingredients.put(68952, 32D);
+//            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
+//        });
+//        recipes.add((Callable<String>) () -> {
+//            int itemId = 12430;
+//            HashMap<Integer, Double> ingredients = new HashMap<>();
+//            ingredients.put(24359, 1D);
+//            ingredients.put(12505, 1D);
+//            ingredients.put(12138, 1D);
+//            ingredients.put(12236, 1D);
+//            ingredients.put(12153, 1D);
+//            return evaluateCraftingProfit(itemId, ingredients, instantBuy);
+//        });
 //        recipes.add((Callable<String>) () -> {
 //            int itemId = 48917;
 //            HashMap<Integer, Double> ingredients = new HashMap<>();
