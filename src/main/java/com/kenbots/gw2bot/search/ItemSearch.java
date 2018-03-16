@@ -42,7 +42,7 @@ public class ItemSearch {
         reloadFlipSettings();
     }
 
-    private static void reloadFlipSettings() {
+    public static void reloadFlipSettings() {
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream("flip.settings");
@@ -78,7 +78,10 @@ public class ItemSearch {
             if (FLIP_SETTINGS.getProperty("mygreatswordsellprice") == null) {
                 FLIP_SETTINGS.setProperty("mygreatswordsellprice", "0");
             }
-
+            if (FLIP_SETTINGS.getProperty("simplemenu") == null) {
+                FLIP_SETTINGS.setProperty("simplemenu", "true");
+            }
+            Main.SIMPLE_MENU = Boolean.parseBoolean(FLIP_SETTINGS.getProperty("simplemenu"));
         }
     }
 
