@@ -418,6 +418,17 @@ public class ItemSearch {
 
             return evaluateCraftingProfit(itemId, ingredients, instantBuy, 2);
         });
+
+        //Gossamer Patch
+        recipes.add((Callable<String>) () -> {
+            int itemId = 76614;
+            HashMap<Integer, Double> ingredients = new HashMap<>();
+            ingredients.put(19790, 25D);
+            ingredients.put(19732, 30D);
+            ingredients.put(19746, 4D);
+            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
+        });
+
 //        recipes.add((Callable<String>) () -> {
 //            int itemId = 9443;
 //            HashMap<Integer, Double> ingredients = new HashMap<>();
@@ -468,7 +479,6 @@ public class ItemSearch {
 //            ingredients.put(48884, 5D);
 //            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
 //        });
-
         pool.invokeAll(recipes).forEach((future) -> {
             try {
                 System.out.println(future.get());
