@@ -79,7 +79,7 @@ public class Item {
 
     @Override
     public String toString() {
-        return String.format("%40s%10d%12d%12d%12d%12d%12d%12d%15d%12d", this.getName(), this.itemId, this.getMaxBuyOrder(), this.getMinSellOrder(), this.getProfit(), (int) (this.getPercentMargin() * 100), this.getSupply(), this.getDemand(), getDemand() - getSupply(), this.getMinsSinceLastChange());
+        return String.format("%60s%10d%12d%12d%12d%12d%12d%12d%15d%12d", this.getName(), this.itemId, this.getMaxBuyOrder(), this.getMinSellOrder(), this.getProfit(), (int) (this.getPercentMargin() * 100), this.getSupply(), this.getDemand(), getDemand() - getSupply(), this.getMinsSinceLastChange());
     }
 
     /**

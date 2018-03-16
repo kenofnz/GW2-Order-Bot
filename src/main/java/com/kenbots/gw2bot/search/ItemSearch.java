@@ -63,10 +63,10 @@ public class ItemSearch {
                 FLIP_SETTINGS.setProperty("spendinglimit", "4000000");
             }
             if (FLIP_SETTINGS.getProperty("minprofitpercent") == null) {
-                FLIP_SETTINGS.setProperty("minprofitpercent", "0.2");
+                FLIP_SETTINGS.setProperty("minprofitpercent", "0.15");
             }
             if (FLIP_SETTINGS.getProperty("minprofit") == null) {
-                FLIP_SETTINGS.setProperty("minprofit", "400");
+                FLIP_SETTINGS.setProperty("minprofit", "300");
             }
             if (FLIP_SETTINGS.getProperty("watchlist") == null) {
                 FLIP_SETTINGS.setProperty("watchlist", "");
@@ -85,11 +85,14 @@ public class ItemSearch {
         }
     }
 
-    private static void printItemData(Collection<Item> items) {
-        System.out.format("%40s%10s%12s%12s%12s%12s%12s%12s%15s%12s%n", "Item", "ItemID", "Buy Order", "Sell Order", "Profit", "Profit %", "Supply", "Demand", "Demand-Supply", "Last Changed");
-        items.forEach((item) -> {
+    private static String printItemData(Collection<Item> items) {
+        String result = String.format("%60s%10s%12s%12s%12s%12s%12s%12s%15s%12s%n", "Item", "ItemID", "Buy Order", "Sell Order", "Profit", "Profit %", "Supply", "Demand", "Demand-Supply", "Last Changed");
+        System.out.print(result);
+        for (Item item : items) {
             System.out.println(item);
-        });
+            result += item.toString() + "\n";
+        }
+        return result;
     }
 
     private static int[] getWatchlist() {
@@ -104,8 +107,14 @@ public class ItemSearch {
         return watchlist;
     }
 
-    public static void findFlipItems() {
+    public static String findFlipItems() {
+        return findFlipItems(.75, 1000, 1000);
+    }
+
+    public static String findFlipItems(double profitLimit, int minDemand, int minSupply) {
         LinkedList<Item> itemsToFlip = new LinkedList<>();
+
+        System.out.println("Querying TP items...");
         JSONArray results = queryGw2Spidy("all-items/all").getJSONArray("results");
         System.out.println("Processing " + results.length() + " items...");
         for (int j = 0; j < results.length(); j++) {
@@ -137,9 +146,10 @@ public class ItemSearch {
             profit = (int) ((minSellOrder * 0.85) - maxBuyOrder);
             percentMargin = 1D * profit / maxBuyOrder;
 
-            if (percentMargin >= Double.parseDouble(FLIP_SETTINGS.getProperty("minprofitpercent")) && percentMargin <= .75
-                    && demand >= 1000
-                    && supply >= 1000
+            if (percentMargin >= Double.parseDouble(FLIP_SETTINGS.getProperty("minprofitpercent")) && percentMargin <= profitLimit
+                    && demand >= minDemand
+                    && supply >= minSupply
+                    && demand - supply >= 0
                     && minsSinceLastChange <= 60
                     && (typeId != 3 && typeId != 5 && typeId != 11
                     && typeId != 18 && typeId != 15)
@@ -154,7 +164,7 @@ public class ItemSearch {
         });
 
         System.out.println("Found " + itemsToFlip.size() + " items");
-        printItemData(itemsToFlip);
+        return "Options:\nMax profit % margin: " + profitLimit + "\nMin Demand: " + minDemand + "\nMin Supply: " + minSupply + "\n" + printItemData(itemsToFlip);
     }
 
     public static void seeWatchlistItemData() {
@@ -359,7 +369,7 @@ public class ItemSearch {
         return itemsToBuy;
     }
 
-    public static void getCraftingProfit(boolean instantBuy) {
+    public static String getCraftingProfit(boolean instantBuy) {
         ForkJoinPool pool = ForkJoinPool.commonPool();
         System.out.println("Gettng crafting profits...\n");
 
@@ -482,13 +492,22 @@ public class ItemSearch {
 //            ingredients.put(48884, 5D);
 //            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
 //        });
+        LinkedList<String> results = new LinkedList<>();
         pool.invokeAll(recipes).forEach((future) -> {
             try {
-                System.out.println(future.get());
+                String result = future.get();
+                System.out.println(result);
+                results.add(result);
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(ItemSearch.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+
+        String output = "";
+        for (String result : results) {
+            output += result + "\n";
+        }
+        return output;
     }
 
     public static String evaluateCraftingProfit(int itemId, HashMap<Integer, Double> ingredients, boolean instantBuy) {

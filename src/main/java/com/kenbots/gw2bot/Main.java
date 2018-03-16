@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import me.nithanim.gw2api.v2.GuildWars2Api;
 import me.nithanim.gw2api.v2.api.account.CurrencyBelonging;
 import me.nithanim.gw2api.v2.api.commerce.transactions.Transaction;
+import static spark.Spark.*;
 
 public class Main {
 
@@ -15,136 +16,151 @@ public class Main {
     public static boolean SIMPLE_MENU = true;
 
     public static void main(String[] args) {
-        API_KEY = args[0];
-        ItemSearch.reloadFlipSettings();
-        Scanner scanner = new Scanner(System.in);
-        String header
-                = "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|    |            Basic           |    |                      Flip Items                      |    |   Greatsword Crafting  |    |       Ecto Salvaging       |\n"
-                + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|  1 | Show Wallet                |  5 | Search for items to flip                             | 12 | Buy crafting materials | 14 | Find rares worth salvaging |\n"
-                + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|  2 | Show Trading Post Listings |  6 | Watchlist items data                                 | 13 | Check on supply        | 15 | Create Buy Order for rares |\n"
-                + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|  3 | Activate Order Bot         |  7 | Current Buy Order items data                         |    |                        |    |                            |\n"
-                + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|  4 | Order Bot Settings         |  8 | Cancel and create new Buy Order for profitable items |    |                        |    |                            |\n"
-                + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|    |                            |  9 | Create Buy Order for profitable items on watchlist   |    |                        |    |                            |\n"
-                + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|    |                            | 10 | Cancel all Buy Orders                                |    |                        |    |                            |\n"
-                + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|    |                            | 11 | Take All Delivery Box                                |    |                        |    |                            |\n"
-                + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
-                + "|                                                                       Crafting Profits                                                                      |\n"
-                + "+-------------------------------------------------------------------------------------------------------------------------------------------------------------+\n"
-                + "| 16 | Crafting with Buy Order ingredients                                                                                                                    |\n"
-                + "+----+--------------------------------------------------------------------------------------------------------------------------------------------------------+\n"
-                + "| 17 | Crafting with Instant Sell ingredients                                                                                                                 |\n"
-                + "+----+--------------------------------------------------------------------------------------------------------------------------------------------------------+\n"
-                + "| 18 | Medium Leather Salvage data                                                                                                                            |\n"
-                + "+----+--------------------------------------------------------------------------------------------------------------------------------------------------------+\n"
-                + "Q. Exit\n";
 
-        if (SIMPLE_MENU) {
-            header = "2  | Show Trading Post Listings\n"
-                    + "5  | Search for items to flip\n"
-                    + "16 | Crafting with Buy Order ingredients\n"
-                    + "18 | Medium Leather Salvage data\n"
-                    + "Q  | Exit\n";
-        }
+        if (args.length > 1) {
+            port(Integer.parseInt(args[0]));
+            get("/find-flips", (req, res) -> {
+                double profitLimit = (req.queryParams("marginLimit") != null) ? Double.parseDouble(req.queryParams("marginLimit")) : 0.75;
+                int minSupply = (req.queryParams("supply") != null) ? Integer.parseInt(req.queryParams("supply")) : 500;
+                int minDemand = (req.queryParams("demand") != null) ? Integer.parseInt(req.queryParams("demand")) : 500;
+                return "<pre><code>" + ItemSearch.findFlipItems(profitLimit, minDemand, minSupply) + "</code></pre>";
+            });
 
-        while (true) {
-            try {
+            get("/crafts-profits", (req, res) -> {
+                return "<pre><code>" + ItemSearch.getCraftingProfit(false) + "</code></pre>";
+            });
+        } else {
+            API_KEY = args[0];
+            ItemSearch.reloadFlipSettings();
+            Scanner scanner = new Scanner(System.in);
+            String header
+                    = "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|    |            Basic           |    |                      Flip Items                      |    |   Greatsword Crafting  |    |       Ecto Salvaging       |\n"
+                    + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|  1 | Show Wallet                |  5 | Search for items to flip                             | 12 | Buy crafting materials | 14 | Find rares worth salvaging |\n"
+                    + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|  2 | Show Trading Post Listings |  6 | Watchlist items data                                 | 13 | Check on supply        | 15 | Create Buy Order for rares |\n"
+                    + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|  3 | Activate Order Bot         |  7 | Current Buy Order items data                         |    |                        |    |                            |\n"
+                    + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|  4 | Order Bot Settings         |  8 | Cancel and create new Buy Order for profitable items |    |                        |    |                            |\n"
+                    + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|    |                            |  9 | Create Buy Order for profitable items on watchlist   |    |                        |    |                            |\n"
+                    + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|    |                            | 10 | Cancel all Buy Orders                                |    |                        |    |                            |\n"
+                    + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|    |                            | 11 | Take All Delivery Box                                |    |                        |    |                            |\n"
+                    + "+----+----------------------------+----+------------------------------------------------------+----+------------------------+----+----------------------------+\n"
+                    + "|                                                                       Crafting Profits                                                                      |\n"
+                    + "+-------------------------------------------------------------------------------------------------------------------------------------------------------------+\n"
+                    + "| 16 | Crafting with Buy Order ingredients                                                                                                                    |\n"
+                    + "+----+--------------------------------------------------------------------------------------------------------------------------------------------------------+\n"
+                    + "| 17 | Crafting with Instant Sell ingredients                                                                                                                 |\n"
+                    + "+----+--------------------------------------------------------------------------------------------------------------------------------------------------------+\n"
+                    + "| 18 | Medium Leather Salvage data                                                                                                                            |\n"
+                    + "+----+--------------------------------------------------------------------------------------------------------------------------------------------------------+\n"
+                    + "Q. Exit\n";
 
-                System.out.println(header);
-                System.out.print("Enter Option : ");
-                String input = scanner.nextLine();
+            if (SIMPLE_MENU) {
+                header = "2  | Show Trading Post Listings\n"
+                        + "5  | Search for items to flip\n"
+                        + "16 | Crafting with Buy Order ingredients\n"
+                        + "18 | Medium Leather Salvage data\n"
+                        + "Q  | Exit\n";
+            }
 
-                switch (input) {
-                    case "q":
-                        System.out.println("Exiting!");
-                        System.exit(0);
-                        break;
-                    case "1":
-                        getWallet();
-                        break;
-                    case "2":
-                        getListings(true);
-                        getListings(false);
-                        break;
-                    case "4":
-                        setOrderBot();
-                        break;
-                    case "3":
-                        OrderBot.startPlacingBuyOrders();
-                        printHorizontalLine();
-                        break;
-                    case "5":
-                        ItemSearch.findFlipItems();
-                        printHorizontalLine();
-                        break;
-                    case "6":
-                        ItemSearch.seeWatchlistItemData();
-                        printHorizontalLine();
-                        break;
-                    case "7":
-                        ItemSearch.assessCurrentBuyOrderItemData();
-                        printHorizontalLine();
-                        break;
-                    case "8":
-                        OrderBot.cancelBuyOrders();
-                        OrderBot.takeAllDeliveryBox();
-                        OrderBot.createBuyOrderForList(ItemSearch.getListOfProfitableItemsInWatchlist());
-                        printHorizontalLine();
-                        break;
-                    case "9":
-                        OrderBot.createBuyOrderForList(ItemSearch.getListOfProfitableItemsInWatchlist());
-                        printHorizontalLine();
-                        break;
-                    case "10":
-                        OrderBot.cancelBuyOrders();
-                        printHorizontalLine();
-                        break;
-                    case "11":
-                        OrderBot.takeAllDeliveryBox();
-                        printHorizontalLine();
-                        break;
-                    case "12":
-                        OrderBot.createBuyOrderForList(ItemSearch.getListOfGreatswordMaterialItems());
-                        printHorizontalLine();
-                        break;
-                    case "13":
-                        ItemSearch.gsSupplyTracker();
-                        printHorizontalLine();
-                        break;
-                    case "14":
-                        ItemSearch.getRareEquipmentForEcto();
-                        printHorizontalLine();
-                        break;
-                    case "15":
-                        OrderBot.createBuyOrderForList(ItemSearch.getRareEquipmentForEcto(), 1);
-                        printHorizontalLine();
-                        break;
-                    case "16":
-                        ItemSearch.getCraftingProfit(false);
-                        printHorizontalLine();
-                        break;
-                    case "17":
-                        ItemSearch.getCraftingProfit(true);
-                        printHorizontalLine();
-                        break;
-                    case "18":
-                        ItemSearch.getMediumCoatForLeather();
-                        printHorizontalLine();
-                        break;
-                    case "19":
-                        ItemSearch.getTrophyShipmentProfit();
-                        break;
+            while (true) {
+                try {
+
+                    System.out.println(header);
+                    System.out.print("Enter Option : ");
+                    String input = scanner.nextLine();
+
+                    switch (input) {
+                        case "q":
+                            System.out.println("Exiting!");
+                            System.exit(0);
+                            break;
+                        case "1":
+                            getWallet();
+                            break;
+                        case "2":
+                            getListings(true);
+                            getListings(false);
+                            break;
+                        case "4":
+                            setOrderBot();
+                            break;
+                        case "3":
+                            OrderBot.startPlacingBuyOrders();
+                            printHorizontalLine();
+                            break;
+                        case "5":
+                            ItemSearch.findFlipItems();
+                            printHorizontalLine();
+                            break;
+                        case "6":
+                            ItemSearch.seeWatchlistItemData();
+                            printHorizontalLine();
+                            break;
+                        case "7":
+                            ItemSearch.assessCurrentBuyOrderItemData();
+                            printHorizontalLine();
+                            break;
+                        case "8":
+                            OrderBot.cancelBuyOrders();
+                            OrderBot.takeAllDeliveryBox();
+                            OrderBot.createBuyOrderForList(ItemSearch.getListOfProfitableItemsInWatchlist());
+                            printHorizontalLine();
+                            break;
+                        case "9":
+                            OrderBot.createBuyOrderForList(ItemSearch.getListOfProfitableItemsInWatchlist());
+                            printHorizontalLine();
+                            break;
+                        case "10":
+                            OrderBot.cancelBuyOrders();
+                            printHorizontalLine();
+                            break;
+                        case "11":
+                            OrderBot.takeAllDeliveryBox();
+                            printHorizontalLine();
+                            break;
+                        case "12":
+                            OrderBot.createBuyOrderForList(ItemSearch.getListOfGreatswordMaterialItems());
+                            printHorizontalLine();
+                            break;
+                        case "13":
+                            ItemSearch.gsSupplyTracker();
+                            printHorizontalLine();
+                            break;
+                        case "14":
+                            ItemSearch.getRareEquipmentForEcto();
+                            printHorizontalLine();
+                            break;
+                        case "15":
+                            OrderBot.createBuyOrderForList(ItemSearch.getRareEquipmentForEcto(), 1);
+                            printHorizontalLine();
+                            break;
+                        case "16":
+                            ItemSearch.getCraftingProfit(false);
+                            printHorizontalLine();
+                            break;
+                        case "17":
+                            ItemSearch.getCraftingProfit(true);
+                            printHorizontalLine();
+                            break;
+                        case "18":
+                            ItemSearch.getMediumCoatForLeather();
+                            printHorizontalLine();
+                            break;
+                        case "19":
+                            ItemSearch.getTrophyShipmentProfit();
+                            break;
+                    }
+                } catch (Exception ex) {
+                    System.err.println(ex);
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (Exception ex) {
-                System.err.println(ex);
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
