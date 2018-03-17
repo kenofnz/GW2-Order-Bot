@@ -23,7 +23,9 @@ public class Main {
                 double profitLimit = (req.queryParams("marginLimit") != null) ? Double.parseDouble(req.queryParams("marginLimit")) : 0.75;
                 int minSupply = (req.queryParams("supply") != null) ? Integer.parseInt(req.queryParams("supply")) : 500;
                 int minDemand = (req.queryParams("demand") != null) ? Integer.parseInt(req.queryParams("demand")) : 500;
-                return "<pre><code>" + ItemSearch.findFlipItems(profitLimit, minDemand, minSupply) + "</code></pre>";
+                int minProfit = (req.queryParams("minProfit") != null) ? Integer.parseInt(req.queryParams("minProfit")) : 300;
+
+                return "<pre><code>" + ItemSearch.findFlipItems(profitLimit, minDemand, minSupply, minProfit) + "</code></pre>";
             });
 
             get("/crafts-profits", (req, res) -> {

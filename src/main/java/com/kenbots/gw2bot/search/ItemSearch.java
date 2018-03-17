@@ -108,10 +108,10 @@ public class ItemSearch {
     }
 
     public static String findFlipItems() {
-        return findFlipItems(.75, 1000, 1000);
+        return findFlipItems(.75, 1000, 1000, Integer.parseInt(FLIP_SETTINGS.getProperty("minprofit")));
     }
 
-    public static String findFlipItems(double profitLimit, int minDemand, int minSupply) {
+    public static String findFlipItems(double profitLimit, int minDemand, int minSupply, int minProfit) {
         LinkedList<Item> itemsToFlip = new LinkedList<>();
 
         System.out.println("Querying TP items...");
@@ -153,8 +153,7 @@ public class ItemSearch {
                     && minsSinceLastChange <= 60
                     && (typeId != 3 && typeId != 5 && typeId != 11
                     && typeId != 18 && typeId != 15)
-                    //&& demand - supply >= 0
-                    && profit > Integer.parseInt(FLIP_SETTINGS.getProperty("minprofit"))) {
+                    && profit > minProfit) {
                 itemsToFlip.add(new Item(itemId, name, supply, demand, maxBuyOrder, minSellOrder, profit, percentMargin, minsSinceLastChange));
             }
         }
@@ -164,7 +163,12 @@ public class ItemSearch {
         });
 
         System.out.println("Found " + itemsToFlip.size() + " items");
-        return "Options:\nMax profit % margin: " + profitLimit + "\nMin Demand: " + minDemand + "\nMin Supply: " + minSupply + "\n" + printItemData(itemsToFlip);
+        return "Options:\n"
+                + "Max profit % margin: " + profitLimit + "\n"
+                + "Min Demand: " + minDemand + "\n"
+                + "Min Supply: " + minSupply + "\n"
+                + "Min Profit: " + minProfit + "\n"
+                + printItemData(itemsToFlip);
     }
 
     public static void seeWatchlistItemData() {
