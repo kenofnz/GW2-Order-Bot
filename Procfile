@@ -1,0 +1,1 @@
+web: java -jar target/GW2Bot-0.0.1-SNAPSHOT.jar $PORT yes
