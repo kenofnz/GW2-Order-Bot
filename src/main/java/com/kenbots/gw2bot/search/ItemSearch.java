@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -40,6 +41,17 @@ public class ItemSearch {
 
     static {
         reloadFlipSettings();
+    }
+
+    public static Date spidyDateParse(String d) {
+        synchronized (SPIDY_DATE_FORMAT) {
+            try {
+                return SPIDY_DATE_FORMAT.parse(d);
+            } catch (ParseException ex) {
+                Logger.getLogger(ItemSearch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return new Date();
     }
 
     public static void reloadFlipSettings() {
@@ -113,48 +125,60 @@ public class ItemSearch {
 
     public static String findFlipItems(double profitLimit, int minDemand, int minSupply, int minProfit) {
         LinkedList<Item> itemsToFlip = new LinkedList<>();
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+
+        Collection<Callable<Item>> itemsFuture = new LinkedList<>();
 
         System.out.println("Querying TP items...");
         JSONArray results = queryGw2Spidy("all-items/all").getJSONArray("results");
         System.out.println("Processing " + results.length() + " items...");
         for (int j = 0; j < results.length(); j++) {
-            JSONObject item = results.getJSONObject(j);
-            int profit, minsSinceLastChange;
-            double percentMargin;
-            String name = item.getString("name");
-            int itemId = item.getInt("data_id");
-            int typeId = item.getInt("type_id");
+            final JSONObject item = results.getJSONObject(j);
+            itemsFuture.add((Callable<Item>) () -> {
+                int profit, minsSinceLastChange;
+                double percentMargin;
+                String name = item.getString("name");
+                int itemId = item.getInt("data_id");
+                int typeId = item.getInt("type_id");
 
-            int supply = item.getInt("sale_availability");
-            int demand = item.getInt("offer_availability");
-            int maxBuyOrder = item.getInt("max_offer_unit_price");
-            int minSellOrder = item.getInt("min_sale_unit_price");
+                int supply = item.getInt("sale_availability");
+                int demand = item.getInt("offer_availability");
+                int maxBuyOrder = item.getInt("max_offer_unit_price");
+                int minSellOrder = item.getInt("min_sale_unit_price");
 
-            String priceLastChanged = item.getString("price_last_changed");
-            long ms = 0;
+                String priceLastChanged = item.getString("price_last_changed");
+                long ms = System.currentTimeMillis() - spidyDateParse(priceLastChanged).getTime();
+                minsSinceLastChange = (int) TimeUnit.MILLISECONDS.toMinutes(ms);
+
+                if (maxBuyOrder <= 0 || minSellOrder <= 0 || supply <= 0 || demand <= 0) {
+                    return null;
+                }
+
+                profit = (int) ((minSellOrder * 0.85) - maxBuyOrder);
+                percentMargin = 1D * profit / maxBuyOrder;
+
+                if (percentMargin >= Double.parseDouble(FLIP_SETTINGS.getProperty("minprofitpercent")) && percentMargin <= profitLimit
+                        && demand >= minDemand
+                        && supply >= minSupply
+                        && demand - supply >= 0
+                        && minsSinceLastChange <= 60
+                        && (typeId != 3 && typeId != 5 && typeId != 11
+                        && typeId != 18 && typeId != 15)
+                        && profit > minProfit) {
+                    return new Item(itemId, name, supply, demand, maxBuyOrder, minSellOrder, profit, percentMargin, minsSinceLastChange);
+                }
+                return null;
+            });
+        }
+
+        for (Future<Item> future : pool.invokeAll(itemsFuture)) {
             try {
-                ms = System.currentTimeMillis() - SPIDY_DATE_FORMAT.parse(priceLastChanged).getTime();
-            } catch (ParseException ex) {
+                Item result = future.get();
+                if (result != null) {
+                    itemsToFlip.add(result);
+                }
+            } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(ItemSearch.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            minsSinceLastChange = (int) TimeUnit.MILLISECONDS.toMinutes(ms);
-
-            if (maxBuyOrder <= 0 || minSellOrder <= 0 || supply <= 0 || demand <= 0) {
-                continue;
-            }
-
-            profit = (int) ((minSellOrder * 0.85) - maxBuyOrder);
-            percentMargin = 1D * profit / maxBuyOrder;
-
-            if (percentMargin >= Double.parseDouble(FLIP_SETTINGS.getProperty("minprofitpercent")) && percentMargin <= profitLimit
-                    && demand >= minDemand
-                    && supply >= minSupply
-                    && demand - supply >= 0
-                    && minsSinceLastChange <= 60
-                    && (typeId != 3 && typeId != 5 && typeId != 11
-                    && typeId != 18 && typeId != 15)
-                    && profit > minProfit) {
-                itemsToFlip.add(new Item(itemId, name, supply, demand, maxBuyOrder, minSellOrder, profit, percentMargin, minsSinceLastChange));
             }
         }
 
@@ -164,7 +188,7 @@ public class ItemSearch {
 
         System.out.println("Found " + itemsToFlip.size() + " items");
         return "Options:\n"
-                + "Max profit % margin: " + profitLimit + "\n"
+                + "Max profit % margin: " + (profitLimit * 100) + "\n"
                 + "Min Demand: " + minDemand + "\n"
                 + "Min Supply: " + minSupply + "\n"
                 + "Min Profit: " + minProfit + "\n"
@@ -189,12 +213,7 @@ public class ItemSearch {
             int minSellOrder = itemPrice.getSells().getUnitPrice();
             priceLastChanged = item.getString("price_last_changed");
 
-            long ms = 0;
-            try {
-                ms = System.currentTimeMillis() - SPIDY_DATE_FORMAT.parse(priceLastChanged).getTime();
-            } catch (ParseException ex) {
-                Logger.getLogger(ItemSearch.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            long ms = System.currentTimeMillis() - spidyDateParse(priceLastChanged).getTime();
             if (maxBuyOrder <= 0 || minSellOrder <= 0 || supply <= 0 || demand <= 0) {
                 continue;
             }
@@ -348,12 +367,7 @@ public class ItemSearch {
             int minSellOrder = itemPrice.getSells().getUnitPrice();
 
             String priceLastChanged = item.getString("price_last_changed");
-            long ms = 0;
-            try {
-                ms = System.currentTimeMillis() - SPIDY_DATE_FORMAT.parse(priceLastChanged).getTime();
-            } catch (ParseException ex) {
-                Logger.getLogger(ItemSearch.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            long ms = System.currentTimeMillis() - spidyDateParse(priceLastChanged).getTime();
             minsSinceLastChange = (int) TimeUnit.MILLISECONDS.toMinutes(ms);
 
             profit = (int) ((minSellOrder * 0.85) - maxBuyOrder);
