@@ -31,6 +31,10 @@ public class Main {
             get("/crafts-profits", (req, res) -> {
                 return "<pre><code>" + ItemSearch.getCraftingProfit(false) + "</code></pre>";
             });
+
+            get("/leather-flips", (req, res) -> {
+                return "<pre><code>" + ItemSearch.getMediumCoatForLeather() + "</code></pre>";
+            });
         } else {
             API_KEY = args[0];
             ItemSearch.reloadFlipSettings();

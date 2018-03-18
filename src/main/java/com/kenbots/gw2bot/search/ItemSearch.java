@@ -651,7 +651,7 @@ public class ItemSearch {
         return itemsToBuy;
     }
 
-    public static LinkedList<Listing> getMediumCoatForLeather() {
+    public static String getMediumCoatForLeather() {
         reloadFlipSettings();
         LinkedList<Listing> count = new LinkedList<>();
         LinkedList<Listing> itemsToBuy = new LinkedList<>();
@@ -663,14 +663,15 @@ public class ItemSearch {
         int thickLeatherMinSell = thickLeatherPrice.getUnitPrice();
 
         double totalMinSell = 2.25 * thickLeatherMinSell + 0.125 * hardenedLeatherMinSell;
-        System.out.println("30% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.3));
-        System.out.println("25% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.25));
-        System.out.println("20% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.2));
-        System.out.println("10% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.1));
-        System.out.println("Break even Max Buy = " + ((totalMinSell * .85 - 3)));
-        System.out.println("Hardened Leather Section Sell: " + hardenedLeatherMinSell);
-        System.out.println("Thick Leather Section Sell: " + thickLeatherMinSell);
-        return itemsToBuy;
+        String response = "30% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.3) + "\n"
+                + "25% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.25) + "\n"
+                + "20% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.2) + "\n"
+                + "10% Profit Max Buy = " + ((totalMinSell * .85 - 3) / 1.1) + "\n"
+                + "Break even Max Buy = " + ((totalMinSell * .85 - 3)) + "\n"
+                + "Hardened Leather Section Sell: " + hardenedLeatherMinSell + "\n"
+                + "Thick Leather Section Sell: " + thickLeatherMinSell;
+        System.out.println(response);
+        return response;
     }
 
     public static void getTrophyShipmentProfit() {
