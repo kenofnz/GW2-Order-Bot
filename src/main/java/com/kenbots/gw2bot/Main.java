@@ -35,6 +35,15 @@ public class Main {
             get("/leather-flips", (req, res) -> {
                 return "<pre><code>" + ItemSearch.getMediumCoatForLeather() + "</code></pre>";
             });
+            get("/refresh-listings", (req, res) -> {
+                API_KEY = "B3A78DA6-238D-114C-A27B-8D4667E8F93805B0F7FD-2939-4669-BF09-E6E67ADD6BCA";
+                String response = getListings(true) + "\n";
+                response += getListings(false) + "\n";
+                Thread.sleep(2000);
+                response += getListings(true) + "\n";
+                response += getListings(false) + "\n";
+                return "<pre><code>" + (response += "Listings refreshed") + "</code></pre>";
+            });
         } else {
             API_KEY = args[0];
             ItemSearch.reloadFlipSettings();
@@ -240,19 +249,21 @@ public class Main {
         printHorizontalLine();
     }
 
-    private static void getListings(boolean buys) {
-        System.out.println(((buys) ? "Buy" : "Sell") + " Listings");
-        printHorizontalLine();
+    private static String getListings(boolean buys) {
+        System.out.println("Getting TP listings...");
+        String response = ((buys) ? "Buy" : "Sell") + " Listings\n";
         Transaction[] transactions = (buys) ? GW2API.commerce().transactions().currentBuys(API_KEY) : GW2API.commerce().transactions().currentSells(API_KEY);
         int totalValue = 0;
         for (Transaction transaction : transactions) {
             totalValue += transaction.getPrice() * transaction.getQuantity();
             Listing listing = new Listing(transaction.getItemId(), transaction.getQuantity(), transaction.getPrice());
-            System.out.println(listing);
+            response += listing + "\n";
         }
         totalValue *= (buys) ? 1 : .9;
-        System.out.println("Value: " + (totalValue / 10000) + "g " + (totalValue / 100) % 100 + "s " + totalValue % 100 + "c");
+        response += "Value: " + (totalValue / 10000) + "g " + (totalValue / 100) % 100 + "s " + totalValue % 100 + "c";
+        System.out.println(response);
         printHorizontalLine();
+        return response;
     }
 
     private static void printHorizontalLine() {
