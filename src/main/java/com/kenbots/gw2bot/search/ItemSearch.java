@@ -449,27 +449,27 @@ public class ItemSearch {
             ingredients.put(19701, 6D);
             return evaluateCraftingProfit(itemId, ingredients, instantBuy);
         });
-
-        //Bowl of Sweet and Spicy Butternut Squash Soup
-        recipes.add((Callable<String>) () -> {
-            int itemId = 41569;
-            HashMap<Integer, Double> ingredients = new HashMap<>();
-            ingredients.put(12544, 20D);
-            ingredients.put(12534, 6D);
-            ingredients.put(12138, 6D);
-            ingredients.put(12142, 6D);
-            ingredients.put(12236, 3D);
-            ingredients.put(12134, 6D);
-            ingredients.put(24360, 3D);
-            ingredients.put(12511, 3D);
-            ingredients.put(12504, 3D);
-            ingredients.put(12258, 6D);
-            ingredients.put(12136, 3D);
-            ingredients.put(12153, 3D);
-            ingredients.put(12156, 3D);
-
-            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 2);
-        });
+//
+//        //Bowl of Sweet and Spicy Butternut Squash Soup
+//        recipes.add((Callable<String>) () -> {
+//            int itemId = 41569;
+//            HashMap<Integer, Double> ingredients = new HashMap<>();
+//            ingredients.put(12544, 20D);
+//            ingredients.put(12534, 6D);
+//            ingredients.put(12138, 6D);
+//            ingredients.put(12142, 6D);
+//            ingredients.put(12236, 3D);
+//            ingredients.put(12134, 6D);
+//            ingredients.put(24360, 3D);
+//            ingredients.put(12511, 3D);
+//            ingredients.put(12504, 3D);
+//            ingredients.put(12258, 6D);
+//            ingredients.put(12136, 3D);
+//            ingredients.put(12153, 3D);
+//            ingredients.put(12156, 3D);
+//
+//            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 2);
+//        });
 
         LinkedList<String> results = new LinkedList<>();
         pool.invokeAll(recipes).forEach((future) -> {
@@ -543,12 +543,31 @@ public class ItemSearch {
         result += "Minimum to Profit: " + (profitMargin * 100) + "% " + Math.round(cost * (1 + profitMargin) / 0.85 / outputAmount) + "\n";
         result += "Lowest Sell Offer: " + salePrice + "(" + 100 * (salePrice * 0.85 - cost / outputAmount) / (cost / outputAmount) + "% profit)" + "\n";
         result += "250 Sell Offer Proft: " + (int) (250 * (salePrice * 0.85 - cost / outputAmount)) + "\n";
-        if (craftAmount != 0) {
-            result += "Craft " + craftAmount + " " + outputAmount + "x " + Main.GW2API.items().get(itemId).getName() + "(" + craftAmount * outputAmount + " Total)" + "\n";
-            result += craftAmount + " Instant Sell Cost: " + cost * craftAmount + "\n";
-            result += craftAmount + " Instant Sell Return: " + totalReturn + "\n";
-            result += "Instant Sell Profit " + (totalReturn - cost * craftAmount) + "(" + 100 * (totalReturn - cost * craftAmount) / (cost * craftAmount) + "%)" + "\n";
+        result += "Crafting 250 Materials\n";
+        int numOfCrafts = 250 / outputAmount;
+        Collection<Callable<String>> ingredientNames = new LinkedList<>();
+
+        for (Entry<Integer, Double> ingredient : ingredients.entrySet()) {
+            ingredientNames.add((Callable<String>) () -> {
+                return (int) (numOfCrafts * ingredient.getValue()) + " " + Main.GW2API.items().get(ingredient.getKey()).getName() + "(" + (numOfCrafts * ingredient.getValue()) / 250 + " stacks)\n";
+            });
+
         }
+
+        for (Future<String> future : pool.invokeAll(ingredientNames)) {
+            try {
+                result += future.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(ItemSearch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+//        if (craftAmount != 0) {
+//            result += "Craft " + craftAmount + " " + outputAmount + "x " + Main.GW2API.items().get(itemId).getName() + "(" + craftAmount * outputAmount + " Total)" + "\n";
+//            result += craftAmount + " Instant Sell Cost: " + cost * craftAmount + "\n";
+//            result += craftAmount + " Instant Sell Return: " + totalReturn + "\n";
+//            result += "Instant Sell Profit " + (totalReturn - cost * craftAmount) + "(" + 100 * (totalReturn - cost * craftAmount) / (cost * craftAmount) + "%)" + "\n";
+//        }
         return result;
     }
 
