@@ -39,7 +39,6 @@ public class Main {
                 API_KEY = "B3A78DA6-238D-114C-A27B-8D4667E8F93805B0F7FD-2939-4669-BF09-E6E67ADD6BCA";
                 String response = getListings(true) + "\n";
                 response += getListings(false) + "\n";
-                Thread.sleep(2000);
                 response += getListings(true) + "\n";
                 response += getListings(false) + "\n";
                 return "<pre><code>" + (response += "Listings refreshed") + "</code></pre>";
