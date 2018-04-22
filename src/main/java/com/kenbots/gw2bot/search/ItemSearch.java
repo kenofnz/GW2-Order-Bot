@@ -408,7 +408,7 @@ public class ItemSearch {
             int itemId = 43451;
             HashMap<Integer, Double> ingredients = new HashMap<>();
             ingredients.put(24277, 3.6D);
-            ingredients.put(19701, 2.4D);
+            ingredients.put(19685, 1.2D);
             return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
         });
         //Plate of Truffle Steak
@@ -427,17 +427,8 @@ public class ItemSearch {
             int itemId = 76614;
             HashMap<Integer, Double> ingredients = new HashMap<>();
             ingredients.put(19790, 25D);
-            ingredients.put(19732, 30D);
+            ingredients.put(19737, 10D);
             ingredients.put(19746, 4D);
-            return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
-        });
-
-        //Master Maintenance Oil
-        recipes.add((Callable<String>) () -> {
-            int itemId = 9461;
-            HashMap<Integer, Double> ingredients = new HashMap<>();
-            ingredients.put(24277, 3D);
-            ingredients.put(12156, 20D);
             return evaluateCraftingProfit(itemId, ingredients, instantBuy, 5);
         });
 
@@ -446,7 +437,7 @@ public class ItemSearch {
             int itemId = 12988;
             HashMap<Integer, Double> ingredients = new HashMap<>();
             ingredients.put(19725, 6D);
-            ingredients.put(19701, 6D);
+            ingredients.put(19685, 3D);
             return evaluateCraftingProfit(itemId, ingredients, instantBuy);
         });
 //
